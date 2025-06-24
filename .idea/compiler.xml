@@ -8,11 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="tourismsytem" />
+        <module name="tourism-sytem" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="tourism-sytem" options="-parameters" />
       <module name="tourismsytem" options="-parameters" />
     </option>
   </component>
