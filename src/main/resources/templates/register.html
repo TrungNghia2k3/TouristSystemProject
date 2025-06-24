@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Role Based Auth</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<style>
+    .navbar {
+        background-color: #61df88;
+    }
+
+    .registration-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .registration-form {
+        max-width: 400px;
+        width: 100%;
+        background-color: whitesmoke;
+        color: black;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<body>
+<div class="registration-container bg-primary">
+    <form class="registration-form" th:action="@{/registration}" method="post" th:object="${user}">
+        <!-- success message -->
+        <div th:if="${param.success}" class="alert alert-success">
+            You've successfully registered to our awesome app!
+        </div>
+        <h1 class="text-center">Registration</h1>
+        <div class="form-group">
+            <label for="name">First Name</label>
+            <input id="name" class="form-control" th:field="*{fullName}" required autofocus="autofocus"/>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" class="form-control" th:field="*{email}" required autofocus="autofocus"/>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" class="form-control" type="password" th:field="*{password}" required
+                   autofocus="autofocus"/>
+        </div>
+
+        <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role" class="form-control" th:field="*{role}">
+                <option value="USER">USER</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+        </div>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary">Register</button>
+            <p class="mt-2">Already registered? <a href="/" th:href="@{/login}">Login here</a></p>
+        </div>
+    </form>
+</div>
+</body>
+</html>

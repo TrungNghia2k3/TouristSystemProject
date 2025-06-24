@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Hotel Detail Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Alex+Brush" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/user/css/open-iconic-bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/user/css/animate.css}">
+    <link rel="stylesheet" th:href="@{/user/css/owl.carousel.min.css}">
+    <link rel="stylesheet" th:href="@{/user/css/owl.theme.default.min.css}">
+    <link rel="stylesheet" th:href="@{/user/css/magnific-popup.css}">
+    <link rel="stylesheet" th:href="@{/user/css/aos.css}">
+    <link rel="stylesheet" th:href="@{/user/css/ionicons.min.css}">
+    <link rel="stylesheet" th:href="@{/user/css/bootstrap-datepicker.css}">
+    <link rel="stylesheet" th:href="@{/user/css/jquery.timepicker.css}">
+    <link rel="stylesheet" th:href="@{/user/css/flaticon.css}">
+    <link rel="stylesheet" th:href="@{/user/css/icomoon.css}">
+    <link rel="stylesheet" th:href="@{/user/css/style.css}">
+</head>
+<body>
+
+<nav th:replace="~{user/fragment/navFragment :: nav}"></nav>
+
+<div class="hero-wrap js-fullheight" th:style="|background-image: url('@{/user/images/bg_5.jpg}');|">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-center"
+             data-scrollax-parent="true">
+            <div class="col-md-9 ftco-animate text-center" data-scrollax=" properties: { translateY: '70%' }">
+                <p class="breadcrumbs" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }"><span
+                        class="mr-2"><a th:href="@{/}">Home</a></span> <span class="mr-2"><a
+                        th:href="@{/hotels}">Hotel</a></span> <span>Hotel Single</span></p>
+                <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Hotel
+                    Details</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section ftco-degree-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col-md-12 ftco-animate">
+                        <div class="single-slider owl-carousel">
+                            <div class="item">
+                                <div class="hotel-img"
+                                     th:style="|background-image: url('@{/user/images/hotel-2.jpg}');|"></div>
+                            </div>
+                            <div class="item">
+                                <div class="hotel-img"
+                                     th:style="|background-image: url('@{/user/images/hotel-3.jpg}');|"></div>
+                            </div>
+                            <div class="item">
+                                <div class="hotel-img"
+                                     th:style="|background-image: url('@{/user/images/hotel-4.jpg}+');|"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 hotel-single mt-4 mb-5 ftco-animate">
+                        <span>Our Best hotels &amp; Rooms</span>
+                        <h2 th:text="${hotel.name}"></h2>
+                        <p class="rate mb-5">
+                            <i class="icon-map"></i><span class="loc"
+                                                          th:text="${hotel.address} + ', '+ ${wardName}+ ', ' + ${districtName}+ ', ' + ${cityName}"></span>
+                            <span class="star">
+                                        <i class="icon-star" th:each="i : ${#numbers.sequence(1, hotel.stars)}"></i>
+                                        <i class="icon-star-o" th:if="${hotel.stars < 5}"
+                                           th:each="i : ${#numbers.sequence(1, 5 - hotel.stars)}"></i>
+                            </span>
+                        </p>
+                        <p th:text="${hotel.description}"></p>
+                        <p>When she reached the first hills of the Italic Mountains, she had a last view back on the
+                            skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of
+                            her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then she
+                            continued her way.</p>
+                        <div class="d-md-flex mt-5 mb-5">
+                            <ul>
+                                <li>The Big Oxmox advised her not to do so</li>
+                                <li>When she reached the first hills of the Italic Mountains</li>
+                                <li>She had a last view back on the skyline of her hometown</li>
+                                <li>Bookmarksgrove, the headline of Alphabet</li>
+                            </ul>
+                            <ul class="ml-md-5">
+                                <li>Question ran over her cheek, then she continued</li>
+                                <li>Pityful a rethoric question ran</li>
+                                <li>Mountains, she had a last view back on the skyline</li>
+                                <li>Headline of Alphabet Village and the subline</li>
+                            </ul>
+                        </div>
+                        <p>When she reached the first hills of the Italic Mountains, she had a last view back on the
+                            skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of
+                            her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then she
+                            continued her way.</p>
+                    </div>
+                    <div class="col-md-12 hotel-single ftco-animate mb-5 mt-4">
+                        <h4 class="mb-4">Our Rooms</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- Owl Carousel -->
+                                <div class="room-slider owl-carousel ftco-animate">
+                                    <div class="destination item" th:each="room: ${rooms}" style="width: 100%">
+                                        <div class="img img-2"
+                                             th:style="'background-image: url(/images/room/'+${room.image != null ? room.image : 'default.jpg'}+');'"></div>
+                                        <div class="text p-3">
+                                            <div class="d-flex">
+                                                <div class="one">
+                                                    <h3 th:text="${room.roomType}"></h3>
+                                                </div>
+                                                <div class="two">
+                                <span class="price per-price"
+                                      th:text="'$' + ${#numbers.formatDecimal(room.pricePerNight, 0, 0)}"></span>
+                                                    <br><small style="color: #3E91FC; font-size: 12px">/night</small>
+                                                </div>
+                                            </div>
+                                            <p th:text="${room.description}"></p>
+                                            <hr>
+                                            <p th:text="'Capacity: ' + ${room.capacity}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 hotel-single ftco-animate mb-5 mt-4">
+                        <h4 class="mb-5">Check Availability &amp; Booking</h4>
+                        <div class="fields">
+                            <form th:action="@{/hotels/booking}" method="post" th:object="${hotelBookingDTO}">
+                                <input type="hidden" id="hotelId" name="hotelId" th:value="${hotel.id}">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="name">Fullname</label>
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="John Doe">
+                                            <p class="text-danger" th:if="${#fields.hasErrors('name')}"
+                                               th:errors="*{name}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="text" class="form-control" id="email" name="email"
+                                                   placeholder="myname@example.com">
+                                            <p class="text-danger" th:if="${#fields.hasErrors('email')}"
+                                               th:errors="*{email}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="phone">Phone</label>
+                                            <input type="text" class="form-control" name="phone" id="phone"
+                                                   placeholder="0123456789">
+                                            <p class="text-danger" th:if="${#fields.hasErrors('phone')}"
+                                               th:errors="*{phone}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="dateFrom">Date from</label>
+                                            <input type="date" class="form-control" id="dateFrom" name="dateFrom">
+                                            <p class="text-danger" th:if="${#fields.hasErrors('dateFrom')}"
+                                               th:errors="*{dateFrom}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="dateTo">Date to</label>
+                                            <input type="date" class="form-control" placeholder="Date to" id="dateTo"
+                                                   name="dateTo">
+                                            <p class="text-danger" th:if="${#fields.hasErrors('dateTo')}"
+                                               th:errors="*{dateTo}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="guest">Guest</label>
+                                            <input type="number" class="form-control" id="guest" name="guest" placeholder="0">
+                                            <p class="text-danger" th:if="${#fields.hasErrors('guest')}"
+                                               th:errors="*{guest}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="children">Children</label>
+                                            <input type="number" class="form-control"
+                                                   id="children" name="children" placeholder="0">
+                                            <p class="text-danger" th:if="${#fields.hasErrors('children')}"
+                                               th:errors="*{children}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="notes">Notes</label>
+                                            <textarea class="form-control" rows="3" id="notes" name="notes" placeholder="Type here"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="submit" value="Check Availability"
+                                                   class="btn btn-primary py-3">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- .col-md-8 -->
+        </div>
+    </div>
+</section> <!-- .section -->
+
+<footer th:replace="~{user/fragment/footerFragment :: footer}"></footer>
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen">
+    <svg class="circular" width="48px" height="48px">
+        <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/>
+        <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10"
+                stroke="#F96D00"/>
+    </svg>
+</div>
+
+
+<script th:src="@{/user/js/jquery.min.js}"></script>
+<script th:src="@{/user/js/jquery-migrate-3.0.1.min.js}"></script>
+<script th:src="@{/user/js/popper.min.js}"></script>
+<script th:src="@{/user/js/bootstrap.min.js}"></script>
+<script th:src="@{/user/js/jquery.easing.1.3.js}"></script>
+<script th:src="@{/user/js/jquery.waypoints.min.js}"></script>
+<script th:src="@{/user/js/jquery.stellar.min.js}"></script>
+<script th:src="@{/user/js/owl.carousel.min.js}"></script>
+<script th:src="@{/user/js/jquery.magnific-popup.min.js}"></script>
+<script th:src="@{/user/js/aos.js}"></script>
+<script th:src="@{/user/js/jquery.animateNumber.min.js}"></script>
+<script th:src="@{/user/js/bootstrap-datepicker.js}"></script>
+<script th:src="@{/user/js/jquery.timepicker.min.js}"></script>
+<script th:src="@{/user/js/scrollax.min.js}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script th:src="@{/user/js/google-map.js}"></script>
+<script th:src="@{/user/js/main.js}"></script>
+
+</body>
+</html>

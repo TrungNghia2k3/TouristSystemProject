@@ -1,0 +1,14 @@
+{
+    "elements": {},
+    "attributes": {
+        "th:if": {
+            "context": "div"
+        },
+        "th:text": {
+            "context": "p"
+        },
+        "th:object": {},
+        "th:errorclass": {},
+        "th:fragment": {}
+    }
+}

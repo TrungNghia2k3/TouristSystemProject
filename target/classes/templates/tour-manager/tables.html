@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Tables</title>
+
+    <!-- Custom fonts for this template-->
+    <link th:href="@{/base/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+
+    <!-- Page level plugin CSS-->
+    <link th:href="@{/base/vendor/datatables/dataTables.bootstrap4.css}" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link th:href="@{/base/css/sb-admin.css}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+<!--Navbar-->
+<nav th:replace="~{tour-manager/fragment/navFragment :: nav}"></nav>
+
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul th:replace="~{tour-manager/fragment/sidebarFragment :: sidebar}"></ul>
+
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/tour-manager}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">Tables</li>
+            </ol>
+
+            <!-- DataTables Example -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-table"></i>
+                    User Data Table
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+
+                        <!-- Nút mở modal -->
+                        <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#userModal"
+                                onclick="openModal('Add User', '', '', '', '')">
+                            Add user
+                        </button>
+
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Action</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <tr th:each="user, stat : ${users}">
+                                <td th:text="${stat.index + 1}"></td>
+                                <td th:text="${user.fullName}"></td>
+                                <td th:text="${user.email}"></td>
+                                <td th:text="${user.role.role.name()}"></td>
+                                <td>
+                                    <button type="button" class="btn btn-warning"
+                                            data-toggle="modal" data-target="#userModal"
+                                            th:attr="onclick='openModal(\'Edit User\', \'' + ${user.id} + '\', \'' + ${user.fullName} + '\', \'' + ${user.email} + '\', \'' + ${user.role.role.name()} + '\')'">
+                                        Edit user
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <footer th:replace="~{tour-manager/fragment/footerFragment :: footer}"></footer>
+
+    </div>
+    <!-- /.content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Add User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm" th:action="@{/tour-manager/saveUser}" method="post">
+                    <input type="hidden" id="id" name="id">
+
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" class="form-control" id="fullName" name="fullName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select id="role" class="form-control" name="role">
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="HOTEL_MANAGER">HOTEL_MANAGER</option>
+                            <option value="TOUR_MANAGER">TOUR_MANAGER</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Modal-->
+<div th:replace="~{tour-manager/fragment/logoutmodalFragment :: logoutmodal}"></div>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/base/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/base/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript-->
+<script th:src="@{/base/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<!-- Page level plugin JavaScript-->
+<script th:src="@{/base/vendor/datatables/jquery.dataTables.js}"></script>
+<script th:src="@{/base/vendor/datatables/dataTables.bootstrap4.js}"></script>
+
+<!-- Custom scripts for all pages-->
+<script th:src="@{/base/js/sb-admin.min.js}"></script>
+
+<!-- Demo scripts for this page-->
+<script th:src="@{/base/js/demo/datatables-demo.js}"></script>
+
+<script>
+    function openModal(title, id, fullName, email, role) {
+
+        console.log("Opening modal with values:", title, id, fullName, email, role); // Debugging log
+
+        document.getElementById("userModalLabel").innerText = title;
+
+        document.getElementById("id").value = id || "";
+        document.getElementById("fullName").value = fullName || "";
+        document.getElementById("email").value = email || "";
+        document.getElementById("role").value = role || "TOUR_MANAGER"; // Giá trị mặc định
+
+        // Nếu là Edit User, ẩn trường password
+        if (title === "Edit User") {
+            document.getElementById("password").parentElement.style.display = "none";
+        } else {
+            document.getElementById("password").parentElement.style.display = "block";
+        }
+
+        // Hiển thị modal
+        $('#userModal').modal('show');
+    }
+</script>
+
+
+</body>
+</html>

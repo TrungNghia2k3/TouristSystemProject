@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+</head>
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .login-form {
+        max-width: 400px;
+        background-color: whitesmoke;
+        color: black;
+        width: 100%;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+<body>
+<div class="login-container bg-primary">
+    <form class="login-form" th:action="@{/login}" method="post" th:object="${user}">
+        <div th:if="${param.error}" class="alert alert-danger">
+            Email or Password entered is Wrong. Please Check and Login Again.
+        </div>
+        <h1 class="text-center mb-4">Login</h1>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" class="form-control" th:field="*{username}" required autofocus="autofocus"/>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" class="form-control" type="password" th:field="*{password}" required/>
+        </div>
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary">Log In</button>
+            <p class="mt-2">New User? <a th:href="@{/registration}">Register here</a></p>
+        </div>
+    </form>
+</div>
+</body>
+</html>
