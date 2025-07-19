@@ -6,7 +6,10 @@ import com.ntn.tourism.model.Hotel;
 import com.ntn.tourism.repository.*;
 import com.ntn.tourism.dto.user.DistrictCityDTO;
 import com.ntn.tourism.model.Tour;
+import com.ntn.tourism.service.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,33 +23,34 @@ import java.util.Map;
 
 @Controller
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/")
 public class HomeController {
 
-    private final DestinationRepository destinationRepository;
-    private final WardRepository wardRepository;
-    private final TourRepository tourRepository;
-    private final HotelRepository hotelRepository;
-    private final CityRepository cityRepository;
+    DestinationService destinationService;
+    WardService wardService;
+    TourService tourService;
+    HotelService HotelService;
+    CityService cityService;
 
     @GetMapping
     public String displayHomepage(Model model) {
 
         // Get all city
-        List<City> cities = cityRepository.findAll();
+        List<City> cities = cityService.findAll();
         cities.sort(Comparator.comparing(City::getCityName));
         model.addAttribute("cities", cities);
 
         // Get all destination
-        List<Destination> destinations = destinationRepository.findAll();
+        List<Destination> destinations = destinationService.findAll();
         model.addAttribute("destinations", destinations);
 
         // Get list of tour (top 5 by stars)
-        List<Tour> tours = tourRepository.findTop5ByOrderByStarsDesc(PageRequest.of(0, 5));
+        List<Tour> tours = tourService.findTop5ByOrderByStarsDesc(PageRequest.of(0, 5));
         model.addAttribute("tours", tours);
 
         // Get list of hotel (top 5 by stars)
-        List<Hotel> hotels = hotelRepository.findTop5ByOrderByStarsDesc(PageRequest.of(0, 5));
+        List<Hotel> hotels = HotelService.findTop5ByOrderByStarsDesc(PageRequest.of(0, 5));
         model.addAttribute("hotels", hotels);
 
         // Use Map to store district and city information
@@ -55,8 +59,8 @@ public class HomeController {
 
         // Lấy thông tin District và City từ Ward dựa trên wardId của mỗi Tour
         for (Tour tour : tours) {
-            Integer wardId = tour.getWard().getId();
-            DistrictCityDTO districtCity = wardRepository.findDistrictAndCityByWardId(wardId);
+            int wardId = tour.getWard().getId();
+            DistrictCityDTO districtCity = wardService.findDistrictAndCityByWardId(wardId);
             if (districtCity != null) {
                 districtMap.put("tour_districtName_" + tour.getId(), districtCity.getDistrictName());
                 cityMap.put("tour_cityName_" + tour.getId(), districtCity.getCityName());
@@ -64,8 +68,8 @@ public class HomeController {
         }
 
         for (Hotel hotel : hotels) {
-            Integer wardId = hotel.getWard().getId();
-            DistrictCityDTO districtCity = wardRepository.findDistrictAndCityByWardId(wardId);
+            int wardId = hotel.getWard().getId();
+            DistrictCityDTO districtCity = wardService.findDistrictAndCityByWardId(wardId);
             if (districtCity != null) {
                 districtMap.put("hotel_districtName_" + hotel.getId(), districtCity.getDistrictName());
                 cityMap.put("hotel_cityName_" + hotel.getId(), districtCity.getCityName());

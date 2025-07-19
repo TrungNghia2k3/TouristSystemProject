@@ -4,17 +4,19 @@
  */
 package com.ntn.tourism.controller.user;
 
+import com.ntn.tourism.dto.user.DistrictCityDTO;
+import com.ntn.tourism.dto.user.TourBookingDTO;
 import com.ntn.tourism.model.Booking;
 import com.ntn.tourism.model.BookingType;
 import com.ntn.tourism.model.City;
-import com.ntn.tourism.repository.BookingRepository;
-import com.ntn.tourism.repository.CityRepository;
-import com.ntn.tourism.repository.TourRepository;
-import com.ntn.tourism.repository.WardRepository;
-import com.ntn.tourism.dto.user.DistrictCityDTO;
-import com.ntn.tourism.dto.user.TourBookingDTO;
 import com.ntn.tourism.model.Tour;
+import com.ntn.tourism.service.BookingService;
+import com.ntn.tourism.service.CityService;
+import com.ntn.tourism.service.TourService;
+import com.ntn.tourism.service.WardService;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,25 +30,26 @@ import java.util.*;
 
 @Controller
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/tour")
 public class TourController {
 
-    private final TourRepository tourRepository;
-    private final WardRepository wardRepository;
-    private final CityRepository cityRepository;
-    private final BookingRepository bookingRepository;
+    TourService tourService;
+    WardService wardService;
+    CityService cityService;
+    BookingService bookingService;
 
     @GetMapping
     public String showTourPage(@RequestParam(defaultValue = "0") int page,  // Page starts at 0
                                @RequestParam(defaultValue = "6") int size,  // 6 tours per page
                                Model model) {
 
-        List<City> cities = cityRepository.findAll();
+        List<City> cities = cityService.findAll();
         cities.sort(Comparator.comparing(City::getCityName));
         model.addAttribute("cities", cities);
 
         // Fetch paginated tours
-        Page<Tour> tourPage = tourRepository.findAll(PageRequest.of(page, size));
+        Page<Tour> tourPage = tourService.findAll(PageRequest.of(page, size));
 
         // Add tours to the model
         model.addAttribute("tours", tourPage.getContent()); // Danh sách tour
@@ -77,12 +80,12 @@ public class TourController {
                               @RequestParam(defaultValue = "6") int size,  // Default size 6 tours per page
                               Model model) {
 
-        List<City> cities = cityRepository.findAll();
+        List<City> cities = cityService.findAll();
         cities.sort(Comparator.comparing(City::getCityName));
         model.addAttribute("cities", cities);
 
         // Use Pageable to apply pagination
-        Page<Tour> tourPage = tourRepository.filterTours(cityId, dateFrom, dateTo, minPrice, maxPrice, stars, PageRequest.of(page, size));
+        Page<Tour> tourPage = tourService.filterTours(cityId, dateFrom, dateTo, minPrice, maxPrice, stars, PageRequest.of(page, size));
 
         model.addAttribute("tours", tourPage.getContent()); // Paginated tour list
         model.addAttribute("currentPage", page);
@@ -110,11 +113,11 @@ public class TourController {
 
     @GetMapping("/tour-details")
     public String showTourDetailPage(@RequestParam int id, Model model) {
-        Tour tour = tourRepository.findById(id).orElse(null);
+        Tour tour = tourService.findById(id);
 
         if (tour == null) return "redirect:/tour";
 
-        DistrictCityDTO districtCity = wardRepository.findDistrictAndCityByWardId(tour.getWard().getId());
+        DistrictCityDTO districtCity = wardService.findDistrictAndCityByWardId(tour.getWard().getId());
         model.addAttribute("wardName", tour.getWard().getWardName());
         model.addAttribute("districtName", districtCity.getDistrictName());
         model.addAttribute("cityName", districtCity.getCityName());
@@ -130,9 +133,9 @@ public class TourController {
     public String tourBooking(@Valid @ModelAttribute("tourBookingDTO") TourBookingDTO tourBookingDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
 
-            Tour tour = tourRepository.findById(tourBookingDTO.getTourId()).orElse(null);
+            Tour tour = tourService.findById(tourBookingDTO.getTourId());
 
-            DistrictCityDTO districtCity = wardRepository.findDistrictAndCityByWardId(tour.getWard().getId());
+            DistrictCityDTO districtCity = wardService.findDistrictAndCityByWardId(tour.getWard().getId());
 
             model.addAttribute("wardName", tour.getWard().getWardName());
             model.addAttribute("districtName", districtCity.getDistrictName());
@@ -143,7 +146,7 @@ public class TourController {
         }
 
         // Tìm Tour theo tourId
-        Tour tour = tourRepository.findById(tourBookingDTO.getTourId()).orElseThrow(() -> new IllegalArgumentException("Invalid tour ID"));
+        Tour tour = tourService.findById(tourBookingDTO.getTourId());
 
         // Chuyển DTO thành Entity
         Booking booking = new Booking();
@@ -159,7 +162,7 @@ public class TourController {
         booking.setTour(tour);
 
         // Lưu booking vào database
-        bookingRepository.save(booking);
+        bookingService.save(booking);
 
         return "redirect:/tour/tour-details?id=" + tourBookingDTO.getTourId();
     }
@@ -168,7 +171,7 @@ public class TourController {
         Map<Integer, DistrictCityDTO> districtCityMap = new HashMap<>();
         for (Tour tour : tours) {
             Integer wardId = tour.getWard().getId();
-            districtCityMap.computeIfAbsent(wardId, wardRepository::findDistrictAndCityByWardId);
+            districtCityMap.computeIfAbsent(wardId, wardService::findDistrictAndCityByWardId);
         }
         return districtCityMap;
     }

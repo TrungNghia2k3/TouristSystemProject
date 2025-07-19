@@ -4,7 +4,9 @@ import com.ntn.tourism.service.UserService;
 import com.ntn.tourism.dto.UserRegisteredDTO;
 import com.ntn.tourism.model.User;
 import com.ntn.tourism.repository.UserRepository;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,13 +21,11 @@ import java.util.List;
 
 @Controller
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/tour-manager")
 public class TourManagerController {
 
-    private final UserRepository userRepository;
-
-    @Autowired
-    private UserService userService;
+    UserService userService;
 
     @GetMapping
     public String displayDashboard(Model model, Principal principal) {
@@ -38,7 +38,7 @@ public class TourManagerController {
     public String displayTables(Model model, Principal principal) {
 
         // Get all users
-        List<User> users = userRepository.findAll();
+        List<User> users = userService.findAll();
         model.addAttribute("users", users);
 
         String username = principal.getName();

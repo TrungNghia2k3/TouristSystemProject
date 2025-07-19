@@ -1,15 +1,15 @@
 package com.ntn.tourism.controller.admin;
 
+import com.ntn.tourism.dto.UserRegisteredDTO;
 import com.ntn.tourism.model.Booking;
 import com.ntn.tourism.model.Hotel;
-import com.ntn.tourism.repository.BookingRepository;
-import com.ntn.tourism.service.UserService;
-import com.ntn.tourism.dto.UserRegisteredDTO;
 import com.ntn.tourism.model.User;
-import com.ntn.tourism.repository.HotelRepository;
-import com.ntn.tourism.repository.UserRepository;
+import com.ntn.tourism.service.BookingService;
+import com.ntn.tourism.service.HotelService;
+import com.ntn.tourism.service.UserService;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,15 +23,13 @@ import java.util.List;
 
 @Controller
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/hotel-manager")
 public class HotelManagerController {
 
-    private final UserRepository userRepository;
-    private final HotelRepository hotelRepository;
-    private final BookingRepository bookingRepository;
-
-    @Autowired
-    private UserService userService;
+    HotelService hotelService;
+    BookingService bookingService;
+    UserService userService;
 
     @GetMapping
     public String displayDashboard() {
@@ -46,13 +44,13 @@ public class HotelManagerController {
             return "redirect:/login"; // Chuyển hướng về trang login nếu chưa đăng nhập
         }
 
-        Hotel hotel = hotelRepository.findByUser(user); // Tìm khách sạn mà user sở hữu
+        Hotel hotel = hotelService.findByUser(user); // Tìm khách sạn mà user sở hữu
         if (hotel == null) {
             model.addAttribute("error", "You are not an owner of any hotel!");
             return "hotel-manager/tables"; // Trả về trang với thông báo lỗi
         }
 
-        List<Booking> bookings = bookingRepository.findByHotelId(hotel.getId());// Lấy danh sách booking
+        List<Booking> bookings = bookingService.findByHotelId(hotel.getId());// Lấy danh sách booking
 
         model.addAttribute("bookings", bookings); // Đưa vào model để hiển thị trong Thymeleaf
 

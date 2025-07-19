@@ -2,6 +2,9 @@ package com.ntn.tourism.controller;
 
 import com.ntn.tourism.dto.UserRegisteredDTO;
 import com.ntn.tourism.service.UserService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,11 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 @RequestMapping("/registration")
 public class RegistrationController {
 
-    @Autowired
-    private UserService userService;
+    UserService userService;
 
     @GetMapping
     public String showRegistrationForm(Model model) {

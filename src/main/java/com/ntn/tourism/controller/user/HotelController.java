@@ -4,11 +4,17 @@
  */
 package com.ntn.tourism.controller.user;
 
-import com.ntn.tourism.dto.user.HotelBookingDTO;
 import com.ntn.tourism.dto.user.DistrictCityDTO;
+import com.ntn.tourism.dto.user.HotelBookingDTO;
 import com.ntn.tourism.model.*;
-import com.ntn.tourism.repository.*;
+import com.ntn.tourism.repository.BookingRepository;
+import com.ntn.tourism.repository.CityRepository;
+import com.ntn.tourism.repository.RoomRepository;
+import com.ntn.tourism.repository.WardRepository;
+import com.ntn.tourism.service.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -24,14 +30,15 @@ import java.util.Map;
 
 @Controller
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/hotels")
 public class HotelController {
 
-    private final HotelRepository hotelRepository;
-    private final WardRepository wardRepository;
-    private final CityRepository cityRepository;
-    private final RoomRepository roomRepository;
-    private final BookingRepository bookingRepository;
+    HotelService hotelService;
+    WardService wardService;
+    CityService cityService;
+    RoomService roomService;
+    BookingService bookingService;
 
     @GetMapping
     public String showHotelPage(
@@ -40,12 +47,12 @@ public class HotelController {
             Model model) {
 
         // Get all cities
-        List<City> cities = cityRepository.findAll();
+        List<City> cities = cityService.findAll();
         cities.sort(Comparator.comparing(City::getCityName));
         model.addAttribute("cities", cities);
 
         // Fetch paginated hotels
-        Page<Hotel> hotelPage = hotelRepository.findAll(PageRequest.of(page, size));
+        Page<Hotel> hotelPage = hotelService.findAll(PageRequest.of(page, size));
 
         // Add hotesl to the model
         model.addAttribute("hotels", hotelPage.getContent()); //List of hotel
@@ -82,12 +89,12 @@ public class HotelController {
             Model model) {
 
         // Get all cities
-        List<City> cities = cityRepository.findAll();
+        List<City> cities = cityService.findAll();
         cities.sort(Comparator.comparing(City::getCityName));
         model.addAttribute("cities", cities);
 
         // Use Pageable to apply pagination
-        Page<Hotel> hotelPage = hotelRepository.filterHotels(cityId, minPrice, maxPrice, stars, PageRequest.of(page, size));
+        Page<Hotel> hotelPage = hotelService.filterHotels(cityId, minPrice, maxPrice, stars, PageRequest.of(page, size));
         model.addAttribute("hotels", hotelPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", hotelPage.getTotalPages());
@@ -116,18 +123,18 @@ public class HotelController {
             @RequestParam int id,
             Model model
     ) {
-        Hotel hotel = hotelRepository.findById(id).orElse(null);
+        Hotel hotel = hotelService.findById(id);
 
         if (hotel == null) return "redirect:/hotels";
 
-        DistrictCityDTO districtCity = wardRepository.findDistrictAndCityByWardId(hotel.getWard().getId());
+        DistrictCityDTO districtCity = wardService.findDistrictAndCityByWardId(hotel.getWard().getId());
 
         model.addAttribute("wardName", hotel.getWard().getWardName());
         model.addAttribute("districtName", districtCity.getDistrictName());
         model.addAttribute("cityName", districtCity.getCityName());
 
         // Get all rooms by hotel id
-        List<Room> rooms = roomRepository.findByHotelId(id);
+        List<Room> rooms = roomService.findByHotelId(id);
         model.addAttribute("rooms", rooms);
 
         model.addAttribute("hotel", hotel);
@@ -141,16 +148,16 @@ public class HotelController {
     public String hotelBooking(@Valid @ModelAttribute HotelBookingDTO hotelBookingDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
 
-            Hotel hotel = hotelRepository.findById(hotelBookingDTO.getHotelId()).orElse(null);
+            Hotel hotel = hotelService.findById(hotelBookingDTO.getHotelId());
 
-            DistrictCityDTO districtCity = wardRepository.findDistrictAndCityByWardId(hotel.getWard().getId());
+            DistrictCityDTO districtCity = wardService.findDistrictAndCityByWardId(hotel.getWard().getId());
 
             model.addAttribute("wardName", hotel.getWard().getWardName());
             model.addAttribute("districtName", districtCity.getDistrictName());
             model.addAttribute("cityName", districtCity.getCityName());
 
             // Get all rooms by hotel id
-            List<Room> rooms = roomRepository.findByHotelId(hotelBookingDTO.getHotelId());
+            List<Room> rooms = roomService.findByHotelId(hotelBookingDTO.getHotelId());
             model.addAttribute("rooms", rooms);
             model.addAttribute("hotel", hotel);
 
@@ -159,8 +166,7 @@ public class HotelController {
         }
 
         // Tìm Hotel theo hotelId
-        Hotel hotel = hotelRepository.findById(hotelBookingDTO.getHotelId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid hotel ID"));
+        Hotel hotel = hotelService.findById(hotelBookingDTO.getHotelId());
 
         // Chuyển DTO thành Entity
         Booking booking = new Booking();
@@ -176,7 +182,7 @@ public class HotelController {
         booking.setHotel(hotel);
 
         // Lưu booking vào database
-        bookingRepository.save(booking);
+        bookingService.save(booking);
 
         return "redirect:/hotels/hotel-details?id=" + hotelBookingDTO.getHotelId();
     }
@@ -188,7 +194,7 @@ public class HotelController {
             if (hotel.getWard() != null) {
                 Integer wardId = hotel.getWard().getId();
                 if (!districtCityMap.containsKey(wardId)) {
-                    DistrictCityDTO districtCity = wardRepository.findDistrictAndCityByWardId(wardId);
+                    DistrictCityDTO districtCity = wardService.findDistrictAndCityByWardId(wardId);
                     if (districtCity != null) {
                         districtCityMap.put(wardId, districtCity);
                     }

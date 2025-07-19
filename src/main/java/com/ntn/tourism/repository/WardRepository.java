@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface WardRepository extends JpaRepository<Ward, Integer> {
 
-    @Query("SELECT new com.tourismsytem.dto.user.DistrictCityDTO(d.districtName, c.cityName) " +
+    @Query("SELECT new com.ntn.tourism.dto.user.DistrictCityDTO(d.districtName, c.cityName) " +
             "FROM Ward w " +
             "JOIN District d ON w.district.id = d.id " +
             "JOIN City c ON d.city.id = c.id " +
